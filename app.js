@@ -1,5 +1,5 @@
 // ============================================================
-//  CUET College Campus — Home Page App Logic v3
+//  CUET College Campus — Home Page App Logic v4 (production)
 // ============================================================
 
 const state = {
@@ -22,7 +22,11 @@ function trackStep(step, value, debounceMs) {
 }
 function _fireStep(step, value) {
   try {
-    const stored = JSON.parse(localStorage.getItem('cuet_gate_v1') || 'null') || {};
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem('cuet_gate_v1') || sessionStorage.getItem('cuet_gate_v1') || 'null');
+    } catch (_) {}
+    if (!stored) stored = {};
     const w = screen.width;
     fetch('/api/track', {
       method: 'POST',
@@ -61,7 +65,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('studentPhone').addEventListener('input', e => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
     state.phone = e.target.value;
-    if (e.target.value.length === 10) trackStep('details', 'phone_entered');
+    if (e.target.value.length === 10) {
+      // Validate Indian mobile number (starts with 6-9)
+      if (/^[6-9]/.test(e.target.value)) {
+        trackStep('details', 'phone_entered');
+      }
+    }
   });
   setupDreamSearch();
 
@@ -160,9 +169,16 @@ function rebuildScoreInputs() {
       </div>`;
     wrap.querySelector('input').addEventListener('input', e => {
       let val = parseFloat(e.target.value);
+      // Sanitize NaN — clear the stored value
+      if (isNaN(val)) {
+        state.scores[subj] = '';
+        updateLiveComposite();
+        updateCTA();
+        return;
+      }
       if (val > 250) { val = 250; e.target.value = 250; }
       if (val < 0)   { val = 0;   e.target.value = 0; }
-      state.scores[subj] = val || '';
+      state.scores[subj] = val;
       updateLiveComposite();
       updateCTA();
       const comp = calcCompositeScore(state.scores);
@@ -309,10 +325,27 @@ function calculateChances() {
   const phone = (document.getElementById('studentPhone').value || '').trim();
   if (!name || name.length < 2) { alert('Please enter your name first.'); return; }
   if (state.selectedSubjects.size === 0) { alert('Please select at least one subject.'); return; }
+
+  // Validate and clamp all scores to 0-250
+  for (const [subj, val] of Object.entries(state.scores)) {
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) {
+      delete state.scores[subj];
+    } else {
+      state.scores[subj] = Math.min(Math.max(num, 0), 250);
+    }
+  }
+
   const composite = calcCompositeScore(state.scores);
   if (composite < 1) { alert('Please enter at least one score.'); return; }
 
-  sessionStorage.setItem('cuetData', JSON.stringify({
+  // Validate phone if provided (Indian mobile: 10 digits starting with 6-9)
+  if (phone && (phone.length !== 10 || !/^[6-9]/.test(phone))) {
+    alert('Please enter a valid 10-digit Indian mobile number (starting with 6-9), or leave it blank.');
+    return;
+  }
+
+  const cuetData = {
     name,
     phone,
     category: state.category,
@@ -321,7 +354,17 @@ function calculateChances() {
     subjects: Array.from(state.selectedSubjects),
     dreamCollege: state.dreamCollege,
     timestamp: Date.now(),
-  }));
+  };
+
+  sessionStorage.setItem('cuetData', JSON.stringify(cuetData));
+
+  // Also store gate data in sessionStorage so results page skips the gate
+  try {
+    const gateData = JSON.parse(localStorage.getItem('cuet_gate_v1') || 'null');
+    if (gateData) {
+      sessionStorage.setItem('cuet_gate_v1', JSON.stringify(gateData));
+    }
+  } catch (_) {}
 
   // Fire-and-forget — save form submission to analytics sheet
   try {

@@ -1,6 +1,12 @@
 {
   "name": "cuet-college-campus",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "description": "DU 2026 CUET College & Cutoff Predictor — statistical engine projecting admission chances across 1,529 Delhi University programs",
   "private": true,
-  "engines": { "node": ">=18" }
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "npx -y vercel dev",
+    "deploy": "npx -y vercel --prod"
+  }
 }

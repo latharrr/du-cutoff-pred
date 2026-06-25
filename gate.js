@@ -1,5 +1,5 @@
 // ============================================================
-//  CUET College Campus — Entry Gate
+//  CUET College Campus — Entry Gate v2 (production)
 //  Blocks the site until the user gives their name (+ optional
 //  phone). Uses psychological trust triggers. Stores the
 //  submission in localStorage so returning users skip it.
@@ -12,6 +12,25 @@
   // ── Check if already unlocked ─────────────────────────────
   var stored = null;
   try { stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (_) {}
+
+  // Also check sessionStorage (set by app.js after form submit)
+  // so users who just submitted don't see the gate again on results page
+  if (!stored) {
+    try { stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null'); } catch (_) {}
+  }
+
+  // If user has cuetData in sessionStorage (they just filled the form), skip gate
+  if (!stored) {
+    try {
+      var cuetRaw = sessionStorage.getItem('cuetData');
+      if (cuetRaw) {
+        var cuetData = JSON.parse(cuetRaw);
+        if (cuetData && cuetData.name && cuetData.name.length >= 2) {
+          stored = { name: cuetData.name, phone: cuetData.phone || '', ts: cuetData.timestamp };
+        }
+      }
+    } catch (_) {}
+  }
 
   if (stored && stored.name && stored.name.length >= 2) {
     // Returning visitor — pre-fill form silently and exit
@@ -119,15 +138,25 @@
       var phone = phoneEl.value.trim();
 
       if (!name || name.length < 2) {
+        errEl.textContent = 'Please enter your name to continue.';
         errEl.classList.remove('gate-hidden');
         nameEl.focus();
         return;
       }
 
+      // Validate phone if provided: must be 10 digits starting with 6-9
+      if (phone && (phone.length !== 10 || !/^[6-9]/.test(phone))) {
+        errEl.textContent = 'Please enter a valid 10-digit mobile number starting with 6-9.';
+        errEl.classList.remove('gate-hidden');
+        phoneEl.focus();
+        return;
+      }
+
       var data = { name: name, phone: phone, ts: Date.now() };
 
-      // Persist for return visits
+      // Persist for return visits (localStorage) + current session (sessionStorage)
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+      try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
 
       // Pre-fill Step 4 in the main form
       prefillForm(data);

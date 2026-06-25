@@ -1,5 +1,5 @@
 // ============================================================
-//  CUET College Campus — Results Page Logic v3
+//  CUET College Campus — Results Page Logic v4 (production)
 // ============================================================
 
 let allResults    = [];
@@ -7,6 +7,8 @@ let filtered      = [];
 let currentFilter = 'all';
 let currentSort   = 'prob';
 let userData      = null;
+let visibleCount  = 50;        // pagination: how many cards to show
+const PAGE_SIZE   = 50;
 
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -29,12 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  runLoadingAnimation(userData);
+  const loadingInterval = runLoadingAnimation(userData);
 
   // Load program data from API (Google Sheets) while animation plays
   try {
     await loadPrograms();
   } catch (_) {
+    clearInterval(loadingInterval);
     document.getElementById('resultsLoading').classList.add('hidden');
     document.getElementById('noDataState').innerHTML = `
       <div class="no-data-icon">⚠️</div>
@@ -45,11 +48,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  showResults(userData);
+  // Wait for animation to finish (at least 2s), then show results
+  const elapsed = Date.now() - (userData._loadStart || Date.now());
+  const delay = Math.max(0, 2000 - elapsed);
+  setTimeout(() => {
+    clearInterval(loadingInterval);
+    showResults(userData);
+  }, delay);
 });
 
 // ── Loading animation ─────────────────────────────────────────
 function runLoadingAnimation(data) {
+  data._loadStart = Date.now();
   const steps = ['ls1','ls2','ls3','ls4','ls5'];
   let i = 0;
   const iv = setInterval(() => {
@@ -58,9 +68,9 @@ function runLoadingAnimation(data) {
       i++;
     } else {
       clearInterval(iv);
-      // showResults is called after loadPrograms resolves, not here
     }
   }, 380);
+  return iv;  // return so caller can clear on error
 }
 
 // ── Compute & Render Results ──────────────────────────────────
@@ -102,7 +112,6 @@ function showResults(data) {
   allResults.sort((a, b) => b.prob - a.prob);
 
   // Expose top predictions for the AI chat widget
-  window.__topPredictions = allResults.slice(0, 10);
   if (window.setChatPredictions) window.setChatPredictions(allResults.slice(0, 10));
 
   // Summary chips
@@ -117,13 +126,18 @@ function showResults(data) {
     <span class="summary-chip chip-info">🎓 ${allResults.length} programs matched</span>
   `;
 
-  // Dream Spotlight
+  // Dream Spotlight — match by college+program name (not fragile id)
   if (data.dreamCollege) {
-    const found = allResults.find(r => r.id === data.dreamCollege.id);
+    const dreamKey = (data.dreamCollege.college || '').toLowerCase().trim()
+                   + '|' + (data.dreamCollege.program || '').toLowerCase().trim();
+    const found = allResults.find(r =>
+      r.college.toLowerCase().trim() + '|' + r.program.toLowerCase().trim() === dreamKey
+    );
     if (found) renderDreamSpotlight(found, composite);
   }
 
   filtered = [...allResults];
+  visibleCount = PAGE_SIZE;
   renderGrid();
 
   document.getElementById('resultsLoading').classList.add('hidden');
@@ -180,7 +194,7 @@ function renderDreamSpotlight(item, composite) {
   el.classList.remove('hidden');
 }
 
-// ── Render Grid ───────────────────────────────────────────────
+// ── Render Grid (with pagination) ─────────────────────────────
 function renderGrid() {
   const grid  = document.getElementById('resultsGrid');
   const noMsg = document.getElementById('noResultsMsg');
@@ -188,12 +202,15 @@ function renderGrid() {
   if (filtered.length === 0) {
     grid.innerHTML = '';
     noMsg.classList.remove('hidden');
+    removeLoadMoreBtn();
     return;
   }
   noMsg.classList.add('hidden');
   grid.innerHTML = '';
 
-  filtered.forEach((item, idx) => {
+  const toShow = filtered.slice(0, visibleCount);
+
+  toShow.forEach((item, idx) => {
     const card = document.createElement('div');
     card.className = `result-card ${item.probClass} animate-in`;
     card.style.animationDelay = `${Math.min(idx * 0.03, 0.6)}s`;
@@ -260,6 +277,7 @@ function renderGrid() {
     grid.appendChild(card);
   });
 
+  // Animate probability bars
   requestAnimationFrame(() => {
     setTimeout(() => {
       document.querySelectorAll('.prob-bar-fill').forEach(bar => {
@@ -267,6 +285,43 @@ function renderGrid() {
       });
     }, 80);
   });
+
+  // Show/hide "Load More" button
+  if (visibleCount < filtered.length) {
+    showLoadMoreBtn(filtered.length - visibleCount);
+  } else {
+    removeLoadMoreBtn();
+  }
+}
+
+// ── Load More pagination ──────────────────────────────────────
+function showLoadMoreBtn(remaining) {
+  let btn = document.getElementById('loadMoreBtn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'loadMoreBtn';
+    btn.type = 'button';
+    btn.className = 'btn-secondary load-more-btn';
+    btn.addEventListener('click', loadMore);
+    const grid = document.getElementById('resultsGrid');
+    grid.parentNode.insertBefore(btn, grid.nextSibling);
+  }
+  btn.textContent = `Show ${Math.min(remaining, PAGE_SIZE)} more results (${remaining} remaining)`;
+}
+
+function removeLoadMoreBtn() {
+  const btn = document.getElementById('loadMoreBtn');
+  if (btn) btn.remove();
+}
+
+function loadMore() {
+  visibleCount += PAGE_SIZE;
+  renderGrid();
+  // Scroll to where new cards start
+  const cards = document.querySelectorAll('.result-card');
+  if (cards.length > visibleCount - PAGE_SIZE) {
+    cards[visibleCount - PAGE_SIZE]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // ── Filter & Sort ─────────────────────────────────────────────
@@ -286,6 +341,7 @@ function applyFiltersAndSort() {
     const matchSearch = !q || item.college.toLowerCase().includes(q) || item.program.toLowerCase().includes(q);
     return matchFilter && matchSearch;
   });
+  visibleCount = PAGE_SIZE;   // reset pagination on filter change
   sortFiltered();
   renderGrid();
 }
@@ -300,7 +356,7 @@ function sortFiltered() {
   if (currentSort === 'prob')   filtered.sort((a, b) => b.prob - a.prob);
   if (currentSort === 'alpha')  filtered.sort((a, b) => a.college.localeCompare(b.college));
   if (currentSort === 'cutoff') filtered.sort((a, b) => a.cutoff2026 - b.cutoff2026);
-  if (currentSort === 'seats')  filtered.sort((a, b) => b.seats - a.seats);
+  if (currentSort === 'seats')  filtered.sort((a, b) => (b.seats || 0) - (a.seats || 0));
 }
 
 function resetFilters() {
@@ -309,6 +365,7 @@ function resetFilters() {
   document.getElementById('collegeSearch').value = '';
   currentFilter = 'all';
   filtered = [...allResults];
+  visibleCount = PAGE_SIZE;
   sortFiltered();
   renderGrid();
 }

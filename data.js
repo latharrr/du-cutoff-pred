@@ -69,15 +69,21 @@ var DU_DATA = [];
 // Fills the global DU_DATA array and resolves when done.
 async function loadPrograms() {
   if (DU_DATA.length > 0) return; // already loaded
-  try {
-    const res = await fetch('/api/programs');
-    if (!res.ok) throw new Error(`/api/programs returned ${res.status}`);
-    const json = await res.json();
-    if (!Array.isArray(json.data)) throw new Error('Unexpected response shape');
-    DU_DATA.push(...json.data);
-  } catch (err) {
-    console.error('[loadPrograms] failed:', err.message);
-    throw err; // propagate so callers can show an error state
+  let attempts = 0;
+  while (attempts < 2) {
+    try {
+      const res = await fetch('/api/programs');
+      if (!res.ok) throw new Error(`/api/programs returned ${res.status}`);
+      const json = await res.json();
+      if (!Array.isArray(json.data)) throw new Error('Unexpected response shape');
+      DU_DATA.push(...json.data);
+      return;
+    } catch (err) {
+      attempts++;
+      console.error(`[loadPrograms] attempt ${attempts} failed:`, err.message);
+      if (attempts >= 2) throw err;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
 }
 
@@ -188,4 +194,4 @@ function calcCompositeScore(scores) {
   return parts.length === 0 ? 0 : Math.round(parts.reduce((a, b) => a + b, 0) * 10) / 10;
 }
 
-const TOTAL_CUET_CANDIDATES = 1380000;
+

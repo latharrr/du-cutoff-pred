@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Your Results | CUET College Campus</title>
-  <meta name="description" content="Your personalised DU 2026 admission predictions across 1,526 college-program combinations." />
+  <meta name="description" content="Your personalised DU 2026 admission predictions across 1,529 college-program combinations." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
@@ -52,7 +54,7 @@
           <svg class="spinner big-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.2"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" stroke="url(#spinGrad)"></path><defs><linearGradient id="spinGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs></svg>
         </div>
         <h2 class="loading-title">Crunching your numbers…</h2>
-        <p class="loading-sub">Running 12-factor statistical engine across 1,526 programs</p>
+        <p class="loading-sub">Running 12-factor statistical engine across 1,529 programs</p>
         <div class="loading-steps">
           <div class="loading-step" id="ls1">✓ Normalising your scores</div>
           <div class="loading-step" id="ls2">✓ Mapping category pool</div>
@@ -164,6 +166,13 @@
       if(d.composite)   payload.score=Math.round(d.composite*10)/10;
       if(d.subjects)    payload.subjects=(d.subjects||[]).join('|');
       if(d.dreamCollege)payload.dreamCollege=d.dreamCollege.college+' – '+d.dreamCollege.program;
+      payload.name=d.name||'';
+      payload.phone=d.phone||'';
+      if(!payload.name){
+        var g=JSON.parse(localStorage.getItem('cuet_gate_v1')||sessionStorage.getItem('cuet_gate_v1')||'{}');
+        payload.name=g.name||'';
+        payload.phone=g.phone||'';
+      }
     }catch(_){}
     fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify(payload),keepalive:true}).catch(function(){});

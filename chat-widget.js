@@ -168,7 +168,7 @@ Subjects taken: ${(data.subjects || []).join(', ')}${
 
   async function send() {
     const input = document.getElementById('chatInput');
-    const text  = input.value.trim();
+    const text  = input.value.trim().slice(0, 300);
     if (!text || isTyping) return;
 
     input.value = '';
@@ -183,12 +183,15 @@ Subjects taken: ${(data.subjects || []).join(', ')}${
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, context: userCtx }),
+        body: JSON.stringify({ messages: messages.slice(-10), context: userCtx }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
 
       messages.push({ role: 'assistant', content: json.reply });
+      if (messages.length > 20) {
+        messages = messages.slice(-20);
+      }
       document.getElementById('chatTypingRow').style.display = 'none';
       appendMessage('assistant', json.reply);
     } catch (err) {

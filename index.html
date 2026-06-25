@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CUET College Campus | DU 2026 College & Cutoff Predictor</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <title>CUET College Campus | DU 2026 College &amp; Cutoff Predictor</title>
   <meta name="description" content="A statistical engine projecting expected 2026 cutoffs and your real admission chances across every Delhi University college and program." />
   <meta property="og:title" content="CUET College Campus | DU 2026 College & Cutoff Predictor" />
-  <meta property="og:description" content="Project expected 2026 cutoffs and your real DU admission chances. 1,526 college-program combinations." />
+  <meta property="og:description" content="Project expected 2026 cutoffs and your real DU admission chances across 1,529 college-program combinations." />
+  <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -334,6 +336,12 @@
   <script>
   (function(){try{
     var w=screen.width,h=screen.height;
+    var name='',phone='';
+    try{
+      var d=JSON.parse(localStorage.getItem('cuet_gate_v1')||sessionStorage.getItem('cuet_gate_v1')||'{}');
+      name=d.name||'';
+      phone=d.phone||'';
+    }catch(_){}
     fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         page:'home',
@@ -341,6 +349,8 @@
         screenRes:w+'x'+h,
         language:navigator.language||'',
         timezone:(Intl&&Intl.DateTimeFormat)?Intl.DateTimeFormat().resolvedOptions().timeZone:'',
+        name:name,
+        phone:phone
       }),keepalive:true}).catch(function(){});
   }catch(_){}}());
   </script>

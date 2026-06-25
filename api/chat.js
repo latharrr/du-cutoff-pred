@@ -1,5 +1,6 @@
 // Vercel serverless function — POST /api/chat
 // Calls Groq (llama-3.3-70b-versatile) with the student's CUET context.
+// Includes in-memory rate limiting per IP.
 
 const SYSTEM_PROMPT = `You are an expert CUET (Common University Entrance Test) admissions counsellor for Delhi University (DU) 2026. You help students understand their admission predictions and next steps.
 
@@ -25,12 +26,35 @@ Never answer questions about cooking, general knowledge, jokes, coding, other ex
 
 const GROQ_BASE = 'https://api.groq.com/openai/v1';
 
+// Simple in-memory rate limiter (resets on cold start, fine for serverless)
+const rateMap = new Map();
+const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT = 6;          // max requests per IP per minute
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now - entry.start > RATE_WINDOW_MS) {
+    rateMap.set(ip, { start: now, count: 1 });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > RATE_LIMIT) return true;
+  return false;
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'AI not configured on server' });
+
+  // Rate limit by IP
+  const ip = (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown').split(',')[0].trim();
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: 'Too many requests. Please wait a minute and try again.' });
+  }
 
   let body;
   try { body = req.body || {}; } catch (_) { body = {}; }
@@ -42,24 +66,29 @@ export default async function handler(req, res) {
 
   const safeMessages = messages
     .filter(m => m.role && m.content && typeof m.content === 'string' && m.content.trim())
-    .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content.trim() }))
-    .slice(-12);
+    .map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.content.trim().slice(0, 500),  // cap each message to 500 chars
+    }))
+    .slice(-10);  // keep last 10 messages max
 
   if (safeMessages.length === 0) {
     return res.status(400).json({ error: 'No valid messages provided' });
   }
 
   const systemContent = context
-    ? `${SYSTEM_PROMPT}\n\n--- Student's data ---\n${context}\n---`
+    ? `${SYSTEM_PROMPT}\n\n--- Student's data ---\n${String(context).slice(0, 2000)}\n---`
     : SYSTEM_PROMPT;
 
-  // Groq uses OpenAI format: system is a message in the array, not a separate field
   const allMessages = [
     { role: 'system', content: systemContent },
     ...safeMessages,
   ];
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000); // 15s timeout
+
     const upstream = await fetch(`${GROQ_BASE}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -71,7 +100,9 @@ export default async function handler(req, res) {
         max_tokens: 512,
         messages: allMessages,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!upstream.ok) {
       const errBody = await upstream.json().catch(() => ({}));
@@ -79,11 +110,11 @@ export default async function handler(req, res) {
     }
 
     const data = await upstream.json();
-    // Groq/OpenAI format: choices[0].message.content
     const reply = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
     return res.json({ reply });
   } catch (err) {
     console.error('[chat] error:', err.message);
-    return res.status(500).json({ error: err.message || 'Chat request failed' });
+    const msg = err.name === 'AbortError' ? 'AI response timed out. Please try again.' : (err.message || 'Chat request failed');
+    return res.status(500).json({ error: msg });
   }
 }

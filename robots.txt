@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /results.html
+
+Sitemap: https://cuetcollege.campus/sitemap.xml

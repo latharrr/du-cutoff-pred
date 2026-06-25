@@ -220,13 +220,7 @@ body {
   border-radius: 50%;
   animation: pulse 1.8s ease-in-out infinite;
 }
-.sort-select {
-  font-size: 0.875rem;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--slate-200);
-  background: white;
-}
+
 @keyframes pulse {
   0%,100% { opacity:1; transform:scale(1); }
   50%      { opacity:0.6; transform:scale(0.8); }
@@ -1606,3 +1600,24 @@ body.gate-open { overflow: hidden; }
   min-width: 0;
 }
 .phone-field:focus { outline: none; box-shadow: none !important; }
+
+/* ── Accessibility: Reduced Motion ────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .ticker-track { animation: none; }
+  .blob { animation: none; }
+}
+
+/* ── Print Styles ─────────────────────────── */
+@media print {
+  .bg-blobs, .sticky-header, .chat-fab, #chatRoot,
+  .filters-bar, .back-cta, .site-footer { display: none !important; }
+  .result-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  .results-grid { display: block; }
+  .result-card { margin-bottom: 12px; }
+  body { background: #fff; }
+}
