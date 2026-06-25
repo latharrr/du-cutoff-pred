@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Results | CUET College Campus</title>
+  <meta name="description" content="Your personalised DU 2026 admission predictions across 1,526 college-program combinations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="results-page">
+
+  <div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="relative-z">
+
+    <!-- HEADER -->
+    <header class="sticky-header">
+      <div class="container header-inner">
+        <nav class="navbar">
+          <a href="index.html" class="logo-link">
+            <div class="logo-wordmark">
+              <span class="logo-cuet">CUET</span>
+              <span class="logo-campus-wrap">
+                <span class="logo-campus">Campus</span>
+                <span class="logo-sparkle" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.5 L13.4 9.2 C13.55 10.05 14.05 10.55 14.9 10.7 L22.5 12 L14.9 13.3 C14.05 13.45 13.55 13.95 13.4 14.8 L12 22.5 L10.6 14.8 C10.45 13.95 9.95 13.45 9.1 13.3 L1.5 12 L9.1 10.7 C9.95 10.55 10.45 10.05 10.6 9.2 Z" fill="currentColor"></path></svg>
+                </span>
+              </span>
+            </div>
+            <div class="logo-tagline">DU 2026 College &amp; Cutoff Predictor</div>
+          </a>
+          <div class="nav-links">
+            <a href="index.html" class="nav-link">← Recalculate</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container main-content" id="resultsMain">
+
+      <!-- Loading State -->
+      <div id="resultsLoading" class="results-loading animate-in">
+        <div class="loading-spinner-wrap">
+          <svg class="spinner big-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.2"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" stroke="url(#spinGrad)"></path><defs><linearGradient id="spinGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs></svg>
+        </div>
+        <h2 class="loading-title">Crunching your numbers…</h2>
+        <p class="loading-sub">Running 12-factor statistical engine across 1,526 programs</p>
+        <div class="loading-steps">
+          <div class="loading-step" id="ls1">✓ Normalising your scores</div>
+          <div class="loading-step" id="ls2">✓ Mapping category pool</div>
+          <div class="loading-step" id="ls3">✓ Projecting 2026 cutoffs</div>
+          <div class="loading-step" id="ls4">✓ Computing sigmoid probabilities</div>
+          <div class="loading-step" id="ls5">✓ Ranking your best seats</div>
+        </div>
+      </div>
+
+      <!-- Results Content -->
+      <div id="resultsContent" class="hidden">
+
+        <!-- Result Header -->
+        <div class="result-hero animate-in">
+          <div class="result-hero-inner">
+            <div class="result-greeting">
+              <span class="result-emoji">🎓</span>
+              <h1 class="result-name" id="resultName">Your Results</h1>
+            </div>
+            <p class="result-meta" id="resultMeta"></p>
+          </div>
+          <div class="result-summary-chips" id="resultSummaryChips"></div>
+        </div>
+
+        <!-- Dream College Spotlight -->
+        <div id="dreamSpotlight" class="dream-spotlight hidden animate-in"></div>
+
+        <!-- Filters Bar -->
+        <div class="filters-bar animate-in">
+          <div class="filters-left">
+            <span class="filter-label">Filter:</span>
+            <div class="filter-chips">
+              <button class="filter-chip active" data-filter="all" onclick="applyFilter(this)">All</button>
+              <button class="filter-chip" data-filter="safe" onclick="applyFilter(this)">🟢 Safe</button>
+              <button class="filter-chip" data-filter="moderate" onclick="applyFilter(this)">🟡 Moderate</button>
+              <button class="filter-chip" data-filter="reach" onclick="applyFilter(this)">🔴 Reach</button>
+            </div>
+          </div>
+          <div class="filters-right">
+            <input type="text" id="collegeSearch" placeholder="Search college / course…" class="field-input search-field mini-search" oninput="filterResults()" />
+            <select id="sortBy" class="field-input sort-select" onchange="sortResults()">
+              <option value="prob">Sort: Best chance first</option>
+              <option value="alpha">Sort: A → Z</option>
+              <option value="cutoff">Sort: Cutoff (low → high)</option>
+              <option value="seats">Sort: Most seats first</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="resultsGrid" class="results-grid animate-in">
+          <!-- Cards injected by JS -->
+        </div>
+
+        <!-- No results message -->
+        <div id="noResultsMsg" class="no-results-msg hidden">
+          <p>No programs match your current filter.</p>
+          <button onclick="resetFilters()" class="btn-secondary">Clear filters</button>
+        </div>
+
+        <!-- Back CTA -->
+        <div class="back-cta">
+          <a href="index.html" class="btn-secondary">← Try with different scores</a>
+          <p class="back-hint">Results are based on 2025 Round-1 data projected to 2026. Actual cutoffs may vary.</p>
+        </div>
+
+      </div><!-- /resultsContent -->
+
+      <!-- No data state (if accessed directly without filling form) -->
+      <div id="noDataState" class="no-data-state hidden animate-in">
+        <div class="no-data-icon">🎓</div>
+        <h2>No prediction data found</h2>
+        <p>Fill in your CUET scores on the home page first to see your personalised college predictions.</p>
+        <a href="index.html" class="btn-primary">Go to Predictor →</a>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="container">
+        <hr class="footer-hr" />
+        <div class="footer-inner">
+          <div><span class="footer-brand">CUET College Campus</span> · Built on public NTA CUET 2025/2026 data &amp; DU 2025-26 Round-1 cutoffs.</div>
+          <div class="footer-disclaimer">Statistical projections — not guarantees.</div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="results.js"></script>
+  <script src="chat-widget.js"></script>
+</body>
+</html>

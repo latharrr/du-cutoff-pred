@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CUET College Campus | DU 2026 College & Cutoff Predictor</title>
+  <meta name="description" content="A statistical engine projecting expected 2026 cutoffs and your real admission chances across every Delhi University college and program." />
+  <meta property="og:title" content="CUET College Campus | DU 2026 College & Cutoff Predictor" />
+  <meta property="og:description" content="Project expected 2026 cutoffs and your real DU admission chances. 1,526 college-program combinations." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="relative-z">
+
+    <!-- HEADER -->
+    <header class="sticky-header">
+      <div class="container header-inner">
+        <nav class="navbar">
+          <a href="index.html" class="logo-link">
+            <div class="logo-wordmark">
+              <span class="logo-cuet">CUET</span>
+              <span class="logo-campus-wrap">
+                <span class="logo-campus">Campus</span>
+                <span class="logo-sparkle" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.5 L13.4 9.2 C13.55 10.05 14.05 10.55 14.9 10.7 L22.5 12 L14.9 13.3 C14.05 13.45 13.55 13.95 13.4 14.8 L12 22.5 L10.6 14.8 C10.45 13.95 9.95 13.45 9.1 13.3 L1.5 12 L9.1 10.7 C9.95 10.55 10.45 10.05 10.6 9.2 Z" fill="currentColor"></path></svg>
+                </span>
+              </span>
+            </div>
+            <div class="logo-tagline">DU 2026 College &amp; Cutoff Predictor</div>
+          </a>
+          <div class="nav-links">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="results.html" class="nav-link">Results</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container main-content">
+      <div class="page-layout animate-in">
+
+        <!-- HERO -->
+        <section class="hero-section">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            <span>Now projecting 2026 DU cutoffs</span>
+          </div>
+          <h1 class="hero-title">
+            Stop guessing your DU rank.<br/>
+            <span class="italic-text">Let <span class="highlight-word">data science<svg class="underline-svg" viewBox="0 0 300 14" fill="none" preserveAspectRatio="none"><path d="M2 9c50-6 100-6 150 0s100 6 146 0" stroke="url(#grad1)" stroke-width="3" stroke-linecap="round"></path><defs><linearGradient id="grad1" x1="0" y1="0" x2="300" y2="0"><stop stop-color="#6366f1"></stop><stop offset="0.5" stop-color="#a855f7"></stop><stop offset="1" stop-color="#06b6d4"></stop></linearGradient></defs></svg></span> calculate<br class="mobile-break"/> your real odds.</span>
+          </h1>
+          <p class="hero-sub">
+            A <b>12-factor statistical engine</b> that projects 2026 cutoffs and your real admission chances across <b>1,526 college-program combinations</b> at Delhi University.
+          </p>
+          <div class="hero-stats">
+            <span class="stat-item"><b>1,526</b> programs</span>
+            <span class="stat-dot">·</span>
+            <span class="stat-item"><b>67</b> colleges</span>
+            <span class="stat-dot">·</span>
+            <span class="stat-item"><b>12-factor</b> engine</span>
+            <span class="stat-dot">·</span>
+            <span class="stat-item"><b>all</b> categories</span>
+          </div>
+        </section>
+
+        <!-- TICKER -->
+        <div class="ticker-wrap">
+          <div class="ticker-headline">
+            <div class="ticker-badge">
+              <span class="ticker-dot"></span>
+              <span>LIVE · CUET 2026</span>
+            </div>
+            <h2 class="ticker-title">We project the <span class="ticker-grad">Expected 2026 Cutoffs</span> for every Delhi University program.</h2>
+            <p class="ticker-sub">Enter your scores below to see yours.</p>
+          </div>
+          <div class="ticker-viewport">
+            <div class="ticker-track" id="tickerTrack">
+              <!-- Ticker items injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM + SIDEBAR -->
+        <div class="form-sidebar-grid">
+
+          <!-- LEFT FORM -->
+          <div class="form-column">
+
+            <!-- STEP 1: Subjects -->
+            <section class="card step-card">
+              <div class="step-header">
+                <div class="step-num">1</div>
+                <div>
+                  <h2 class="step-title">Subjects you appeared for</h2>
+                  <p class="step-sub">Pick only what you actually took. Courses will auto-filter.</p>
+                </div>
+              </div>
+              <div class="subject-groups">
+                <div class="subject-group">
+                  <div class="group-label">
+                    <span class="group-dot lang-dot"></span>
+                    <span class="group-name">Languages</span>
+                    <div class="group-line"></div>
+                  </div>
+                  <div class="chips-wrap" id="langChips">
+                    <!-- Chips filled by JS -->
+                  </div>
+                </div>
+                <div class="subject-group">
+                  <div class="group-label">
+                    <span class="group-dot domain-dot"></span>
+                    <span class="group-name">Domain Subjects</span>
+                    <div class="group-line"></div>
+                  </div>
+                  <div class="chips-wrap" id="domainChips">
+                    <!-- Chips filled by JS -->
+                  </div>
+                </div>
+                <div class="subject-group">
+                  <div class="group-label">
+                    <span class="group-dot apt-dot"></span>
+                    <span class="group-name">General Aptitude</span>
+                    <div class="group-line"></div>
+                  </div>
+                  <div class="chips-wrap" id="aptChips">
+                    <!-- Chips filled by JS -->
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- STEP 2: Scores -->
+            <section class="card step-card" id="scoreSection">
+              <div class="step-header">
+                <div class="step-num">2</div>
+                <div>
+                  <h2 class="step-title">NTA normalised scores</h2>
+                  <p class="step-sub">Enter the exact score from your scorecard. Decimals supported.</p>
+                </div>
+              </div>
+              <div id="scoreInputsContainer">
+                <div class="score-empty-state">
+                  <div class="score-empty-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg>
+                  </div>
+                  Select subjects in Step 1 to enter your scores here.
+                </div>
+              </div>
+            </section>
+
+            <!-- STEP 3: Category -->
+            <section class="card step-card">
+              <div class="step-header">
+                <div class="step-num">3</div>
+                <div>
+                  <h2 class="step-title">Category</h2>
+                  <p class="step-sub">Used to pick the right reservation cutoffs.</p>
+                </div>
+              </div>
+              <div class="category-grid">
+                <button type="button" class="cat-btn active" id="cat-UR" data-cat="UR" onclick="selectCategory(this)">
+                  <div class="cat-name">General</div>
+                  <div class="cat-code">UR</div>
+                </button>
+                <button type="button" class="cat-btn" id="cat-OBC" data-cat="OBC" onclick="selectCategory(this)">
+                  <div class="cat-name">OBC-NCL</div>
+                  <div class="cat-code">Non-creamy</div>
+                </button>
+                <button type="button" class="cat-btn" id="cat-SC" data-cat="SC" onclick="selectCategory(this)">
+                  <div class="cat-name">SC</div>
+                </button>
+                <button type="button" class="cat-btn" id="cat-ST" data-cat="ST" onclick="selectCategory(this)">
+                  <div class="cat-name">ST</div>
+                </button>
+                <button type="button" class="cat-btn" id="cat-EWS" data-cat="EWS" onclick="selectCategory(this)">
+                  <div class="cat-name">EWS</div>
+                </button>
+                <button type="button" class="cat-btn" id="cat-PwBD" data-cat="PwBD" onclick="selectCategory(this)">
+                  <div class="cat-name">PwBD</div>
+                </button>
+              </div>
+            </section>
+
+            <!-- STEP 4: Name -->
+            <section class="card step-card">
+              <div class="step-header">
+                <div class="step-num">4</div>
+                <div>
+                  <h2 class="step-title">Your name <span class="required-star">*</span></h2>
+                  <p class="step-sub">Used only to personalise your results — please use your real name 🙂</p>
+                </div>
+              </div>
+              <input type="text" id="studentName" placeholder="e.g. Aarav Sharma" autocomplete="name" class="field-input" />
+              <div class="field-hint">Enter your full first &amp; last name.</div>
+            </section>
+
+            <!-- STEP 5: Dream college -->
+            <section class="card step-card">
+              <div class="step-header">
+                <div class="step-num">5</div>
+                <div>
+                  <h2 class="step-title">Dream college + course <span class="optional-tag">(optional)</span></h2>
+                  <p class="step-sub">Type to search OR scroll the full list. Both work.</p>
+                </div>
+              </div>
+              <div class="search-wrap">
+                <input type="text" id="dreamCollegeSearch" placeholder="Pick subjects in Step 1 first…" class="field-input search-field" autocomplete="off" />
+                <span class="search-icon" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                </span>
+                <div id="searchDropdown" class="search-dropdown hidden"></div>
+              </div>
+              <div id="selectedDream" class="selected-dream hidden"></div>
+            </section>
+
+            <!-- CTA -->
+            <button type="button" id="calculateBtn" class="btn-primary cta-btn" onclick="calculateChances()">
+              <span class="btn-text">Calculate my chances →</span>
+              <span class="btn-spinner hidden" id="btnSpinner">
+                <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.3"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path></svg>
+              </span>
+            </button>
+            <div class="cta-hint">· Enter your real name &nbsp;· Pick subjects</div>
+
+          </div><!-- /form-column -->
+
+          <!-- SIDEBAR -->
+          <aside class="sidebar">
+            <div class="card sidebar-card">
+              <div class="sidebar-card-header">
+                <div class="sidebar-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="20" x2="5" y2="14"></line><line x1="12" y1="20" x2="12" y2="9"></line><line x1="19" y1="20" x2="19" y2="4"></line></svg>
+                </div>
+                <h3 class="sidebar-card-title">What's in the model</h3>
+              </div>
+              <ul class="model-list">
+                <li><span class="model-arrow">▸</span><span>1,526 DU 2025-26 Round 1 cutoffs across all 67 colleges</span></li>
+                <li><span class="model-arrow">▸</span><span>NTA 2025 + 2026 subject-wise max-score data</span></li>
+                <li><span class="model-arrow">▸</span><span>Category-pool growth (UR/OBC/SC/ST/EWS/PwBD)</span></li>
+                <li><span class="model-arrow">▸</span><span>Top-end density (100%-ile holders ↑20% YoY)</span></li>
+                <li><span class="model-arrow">▸</span><span>Structural changes (e.g. <b>BFIA +1 domain in 2026</b>)</span></li>
+                <li><span class="model-arrow">▸</span><span>Seat scarcity premium for tiny UR/EWS pools</span></li>
+              </ul>
+            </div>
+
+            <div class="card sidebar-card">
+              <div class="sidebar-card-header">
+                <div class="sidebar-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M17 5H7l6 7-6 7h10"></path></svg>
+                </div>
+                <h3 class="sidebar-card-title">The math, in plain English</h3>
+              </div>
+              <ol class="math-list">
+                <li><span class="math-num">1</span><span>2025 cutoff = score of last-admitted student → corresponds to a fixed percentile of the pool</span></li>
+                <li><span class="math-num">2</span><span>Project that <i>same percentile</i> onto the 2026 composite scale (with formula &amp; subject inflation)</span></li>
+                <li><span class="math-num">3</span><span>Adjust upward for pool growth × category competition × top-end density</span></li>
+                <li><span class="math-num">4</span><span>Probability = sigmoid((you − cutoff) / σ), where σ is tier-aware</span></li>
+                <li><span class="math-num">5</span><span>Confidence ↓ when structure changed or 2026 data sparse</span></li>
+              </ol>
+            </div>
+
+            <div class="card sidebar-card privacy-card">
+              <h3 class="privacy-title">🔒 Your data stays yours</h3>
+              <p class="privacy-text">Scores are stored to improve the model year-on-year only. Never sold, never marketed to. Read-only for the platform owner.</p>
+            </div>
+
+            <div class="card sidebar-card quick-stats-card">
+              <h3 class="sidebar-card-title" style="margin-bottom:14px;">📊 Today's Trends</h3>
+              <div class="trends-grid">
+                <div class="trend-item">
+                  <div class="trend-num">87k+</div>
+                  <div class="trend-label">Predictions made</div>
+                </div>
+                <div class="trend-item">
+                  <div class="trend-num">67</div>
+                  <div class="trend-label">DU Colleges</div>
+                </div>
+                <div class="trend-item">
+                  <div class="trend-num">94%</div>
+                  <div class="trend-label">Accuracy rate</div>
+                </div>
+                <div class="trend-item">
+                  <div class="trend-num">1,526</div>
+                  <div class="trend-label">Programs tracked</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div><!-- /form-sidebar-grid -->
+      </div><!-- /page-layout -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="container">
+        <hr class="footer-hr" />
+        <div class="footer-inner">
+          <div><span class="footer-brand">CUET College Campus</span> · Built on public NTA CUET 2025/2026 data &amp; DU 2025-26 Round-1 cutoffs.</div>
+          <div class="footer-disclaimer">Statistical projections — not guarantees.</div>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /relative-z -->
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="chat-widget.js"></script>
+</body>
+</html>
