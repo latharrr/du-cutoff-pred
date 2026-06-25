@@ -5,6 +5,8 @@
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
       csv = await response.text();
     } else {
       // Fallback to local file if env variable is missing (great for local running/development)
-      const csvPath = path.join(process.cwd(), 'du_cutoffs_combined.csv');
+      const csvPath = path.join(__dirname, '..', 'du_cutoffs_combined.csv');
       csv = fs.readFileSync(csvPath, 'utf8');
     }
     const rows = parseCSV(csv);
