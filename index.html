@@ -193,17 +193,28 @@
               </div>
             </section>
 
-            <!-- STEP 4: Name -->
+            <!-- STEP 4: Name + Phone -->
             <section class="card step-card">
               <div class="step-header">
                 <div class="step-num">4</div>
                 <div>
-                  <h2 class="step-title">Your name <span class="required-star">*</span></h2>
-                  <p class="step-sub">Used only to personalise your results — please use your real name 🙂</p>
+                  <h2 class="step-title">Your details <span class="required-star">*</span></h2>
+                  <p class="step-sub">Used to personalise your results. Phone is optional — for follow-up counselling only.</p>
                 </div>
               </div>
-              <input type="text" id="studentName" placeholder="e.g. Aarav Sharma" autocomplete="name" class="field-input" />
-              <div class="field-hint">Enter your full first &amp; last name.</div>
+              <div class="details-row">
+                <div class="details-field">
+                  <label class="details-label" for="studentName">Full Name <span class="required-star">*</span></label>
+                  <input type="text" id="studentName" placeholder="e.g. Aarav Sharma" autocomplete="name" class="field-input" />
+                </div>
+                <div class="details-field">
+                  <label class="details-label" for="studentPhone">Phone Number <span class="optional-tag">(optional)</span></label>
+                  <div class="phone-input-wrap">
+                    <span class="phone-prefix">+91</span>
+                    <input type="tel" id="studentPhone" placeholder="9876543210" autocomplete="tel" class="field-input phone-field" maxlength="10" pattern="[0-9]{10}" />
+                  </div>
+                </div>
+              </div>
             </section>
 
             <!-- STEP 5: Dream college -->

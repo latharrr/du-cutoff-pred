@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       const timestamp = ist.toISOString().replace('T', ' ').slice(0, 19) + ' IST';
 
       const row = {
+        type:           'visit',        // tells Apps Script which sheet to write to
         timestamp,
         ip,
         country,

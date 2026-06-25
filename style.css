@@ -1315,3 +1315,54 @@ body {
   transition: opacity 0.15s, transform 0.15s;
 }
 .chat-send-btn:hover { opacity: 0.9; transform: scale(1.05); }
+
+/* ── Step 4: Details row (name + phone) ─────────────────────── */
+.details-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 540px) {
+  .details-row { grid-template-columns: 1fr; }
+}
+.details-field { display: flex; flex-direction: column; gap: 6px; }
+.details-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.phone-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: 1.5px solid var(--slate-200);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.phone-input-wrap:focus-within {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+.phone-prefix {
+  padding: 0 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  background: var(--slate-50);
+  border-right: 1.5px solid var(--slate-200);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.phone-field {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  flex: 1;
+  min-width: 0;
+}
+.phone-field:focus { outline: none; box-shadow: none !important; }

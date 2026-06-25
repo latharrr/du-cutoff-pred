@@ -7,6 +7,7 @@ const state = {
   scores: {},
   category: 'UR',
   dreamCollege: null,
+  phone: '',
 };
 
 // ── Init ─────────────────────────────────────────────────────
@@ -15,6 +16,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildTicker();
   updateCTA();
   document.getElementById('studentName').addEventListener('input', updateCTA);
+  document.getElementById('studentPhone').addEventListener('input', e => {
+    // strip non-digits, max 10
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    state.phone = e.target.value;
+  });
   setupDreamSearch();
 
   // Load programs from Google Sheets in background.
@@ -251,7 +257,8 @@ function updateCTA() {
 
 // ── Calculate & navigate ─────────────────────────────────────
 function calculateChances() {
-  const name = document.getElementById('studentName').value.trim();
+  const name  = document.getElementById('studentName').value.trim();
+  const phone = (document.getElementById('studentPhone').value || '').trim();
   if (!name || name.length < 2) { alert('Please enter your name first.'); return; }
   if (state.selectedSubjects.size === 0) { alert('Please select at least one subject.'); return; }
   const composite = calcCompositeScore(state.scores);
@@ -259,6 +266,7 @@ function calculateChances() {
 
   sessionStorage.setItem('cuetData', JSON.stringify({
     name,
+    phone,
     category: state.category,
     scores: state.scores,
     composite,
@@ -266,6 +274,29 @@ function calculateChances() {
     dreamCollege: state.dreamCollege,
     timestamp: Date.now(),
   }));
+
+  // Fire-and-forget — save form submission to analytics sheet
+  try {
+    const w = screen.width;
+    fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        phone,
+        category:     state.category,
+        composite:    Math.round(composite * 10) / 10,
+        subjects:     Array.from(state.selectedSubjects).join('|'),
+        scores:       JSON.stringify(state.scores),
+        dreamCollege: state.dreamCollege ? state.dreamCollege.college : '',
+        dreamProgram: state.dreamCollege ? state.dreamCollege.program : '',
+        deviceType:   w <= 768 ? 'mobile' : w <= 1024 ? 'tablet' : 'desktop',
+        language:     navigator.language || '',
+        timezone:     (Intl && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : '',
+      }),
+      keepalive: true,
+    }).catch(function() {});
+  } catch (_) {}
 
   const btn     = document.getElementById('calculateBtn');
   const spinner = document.getElementById('btnSpinner');
