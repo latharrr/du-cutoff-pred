@@ -120,10 +120,10 @@ const CATEGORY_FACTOR = {
 
 // ── 2026 Projection factors (pool growth + top-end density) ──
 const PROJECTION_FACTOR = {
-  elite:  1.042,
-  high:   1.032,
-  medium: 1.022,
-  low:    1.012,
+  elite:  1.002, // 0.2% increase (realistic ceiling shift)
+  high:   1.003, // 0.3% increase
+  medium: 1.004, // 0.4% increase
+  low:    1.005, // 0.5% increase
 };
 
 function getProgramTier(r1Cutoff, maxComposite) {
@@ -140,7 +140,8 @@ function getProjectedCutoff2026(item, category) {
   // Use actual category R1 cutoff when available; fall back to UR × factor estimate
   const base   = item.cutoff.r1_cat?.[category] ?? item.cutoff.r1_cat?.UR
               ?? item.cutoff.r1 * (CATEGORY_FACTOR[category] || 1);
-  return Math.round(base * factor * 10) / 10;
+  const projected = base * factor;
+  return Math.round(Math.min(projected, item.maxComposite) * 10) / 10;
 }
 
 // Sigmoid probability — calibrated to DU admission data
