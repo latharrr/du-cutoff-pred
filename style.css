@@ -1027,7 +1027,7 @@ body {
 .round-val   { font-size: 0.82rem; font-weight: 700; color: var(--slate-700); }
 .round-arrow { color: var(--slate-300); font-size: 0.8rem; flex-shrink: 0; }
 .proj-cell   { background: linear-gradient(135deg, #eef2ff, #f5f3ff); border-radius: 7px; padding: 4px 8px; }
-.proj-val    { color: var(--indigo) !important; }
+.proj-val    { color: var(--indigo) !important; font-size: 0.76rem; }
 
 /* Result card footer */
 .result-card-footer {

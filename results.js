@@ -106,7 +106,14 @@ function showResults(data) {
     const r2adj = item.cutoff.r2
       ? Math.round(item.cutoff.r2 * catF * 10) / 10
       : (r1adj && r3adj && r3adj !== '—' ? Math.round((r1adj + r3adj) / 2 * 10) / 10 : '—');
-    return { ...item, tier, cutoff2026, prob, probClass, confidence, trend, r1adj, r2adj, r3adj };
+
+    // Range of 0.5% lower and higher around the projection
+    const margin = 0.005 * item.maxComposite;
+    const cutoffMin = Math.round(Math.max(0, cutoff2026 - margin) * 10) / 10;
+    const cutoffMax = Math.round(Math.min(item.maxComposite, cutoff2026 + margin) * 10) / 10;
+    const cutoffRange = `${cutoffMin.toFixed(1)}–${cutoffMax.toFixed(1)}`;
+
+    return { ...item, tier, cutoff2026, cutoffRange, prob, probClass, confidence, trend, r1adj, r2adj, r3adj };
   });
 
   allResults.sort((a, b) => b.prob - a.prob);
@@ -183,7 +190,7 @@ function renderDreamSpotlight(item, composite) {
       </div>
       <div class="dream-cutoff-item">
         <span class="dream-cutoff-label">Proj. 2026</span>
-        <span class="dream-cutoff-val" style="color:#fcd34d">${item.cutoff2026}</span>
+        <span class="dream-cutoff-val" style="color:#fcd34d">${item.cutoffRange}</span>
       </div>
       <div class="dream-cutoff-item">
         <span class="dream-cutoff-label">UR Seats</span>
@@ -258,7 +265,7 @@ function renderGrid() {
         <div class="round-arrow">→</div>
         <div class="round-cell proj-cell">
           <div class="round-label">Proj. 2026</div>
-          <div class="round-val proj-val">${item.cutoff2026}</div>
+          <div class="round-val proj-val">${item.cutoffRange}</div>
         </div>
       </div>
 
