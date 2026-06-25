@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       const timestamp = ist.toISOString().replace('T', ' ').slice(0, 19) + ' IST';
 
       const row = {
-        type:           'visit',        // tells Apps Script which sheet to write to
+        type:           body.type           || 'visit',
         timestamp,
         ip,
         country,
@@ -48,11 +48,16 @@ export default async function handler(req, res) {
         timezone:       body.timezone       || '',
         userAgent:      ua,
         referer,
-        // CUET-specific (only present on results page)
+        // CUET-specific (results page visits)
         category:       body.category       || '',
         score:          body.score          || '',
         subjects:       body.subjects       || '',
         dreamCollege:   body.dreamCollege   || '',
+        // Step tracking (funnel events)
+        step:           body.step           || '',
+        value:          body.value          || '',
+        name:           body.name           || '',
+        phone:          body.phone          || '',
       };
 
       // Fire-and-forget to Apps Script — we don't await the result

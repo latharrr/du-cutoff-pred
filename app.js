@@ -10,16 +10,58 @@ const state = {
   phone: '',
 };
 
+// ── Step tracking ─────────────────────────────────────────────
+const _stepTimers = {};
+function trackStep(step, value, debounceMs) {
+  if (debounceMs) {
+    clearTimeout(_stepTimers[step]);
+    _stepTimers[step] = setTimeout(() => _fireStep(step, value), debounceMs);
+  } else {
+    _fireStep(step, value);
+  }
+}
+function _fireStep(step, value) {
+  try {
+    const stored = JSON.parse(localStorage.getItem('cuet_gate_v1') || 'null') || {};
+    const w = screen.width;
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type:       'step',
+        step,
+        value:      String(value ?? ''),
+        page:       window.location.pathname,
+        name:       stored.name  || '',
+        phone:      stored.phone || '',
+        deviceType: w <= 768 ? 'mobile' : w <= 1024 ? 'tablet' : 'desktop',
+        language:   navigator.language || '',
+        timezone:   (Intl && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : '',
+      }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch (_) {}
+}
+
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   buildChips();
   buildTicker();
   updateCTA();
-  document.getElementById('studentName').addEventListener('input', updateCTA);
+
+  let _nameTracked = false;
+  document.getElementById('studentName').addEventListener('input', function(e) {
+    updateCTA();
+    if (!_nameTracked && e.target.value.trim().length >= 3) {
+      _nameTracked = true;
+      trackStep('details', 'name_entered');
+    }
+  });
+
   document.getElementById('studentPhone').addEventListener('input', e => {
-    // strip non-digits, max 10
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
     state.phone = e.target.value;
+    if (e.target.value.length === 10) trackStep('details', 'phone_entered');
   });
   setupDreamSearch();
 
@@ -62,9 +104,11 @@ function toggleSubject(btn, subj) {
     state.selectedSubjects.delete(subj);
     btn.classList.remove('selected');
     delete state.scores[subj];
+    trackStep('subject_removed', `${subj} (${state.selectedSubjects.size} left)`);
   } else {
     state.selectedSubjects.add(subj);
     btn.classList.add('selected');
+    trackStep('subject_added', `${subj} (${state.selectedSubjects.size} total)`);
   }
   rebuildScoreInputs();
   updateDreamSearch();
@@ -121,6 +165,8 @@ function rebuildScoreInputs() {
       state.scores[subj] = val || '';
       updateLiveComposite();
       updateCTA();
+      const comp = calcCompositeScore(state.scores);
+      if (comp > 0) trackStep('score', comp.toFixed(1), 1500);
     });
     grid.appendChild(wrap);
   });
@@ -159,6 +205,7 @@ function selectCategory(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   state.category = btn.dataset.cat;
+  trackStep('category', btn.dataset.cat);
 }
 
 // ── Dream College Search ──────────────────────────────────────
@@ -231,6 +278,7 @@ function selectDreamCollege(item) {
     <div class="selected-dream-meta">${item.seats} UR seats · R1 cutoff: ${item.cutoff.r1} · R2: ${item.cutoff.r2} · R3: ${item.cutoff.r3}</div>
   `;
   el.classList.remove('hidden');
+  trackStep('dream', `${item.college} — ${item.program}`);
 }
 
 // ── Ticker ───────────────────────────────────────────────────
