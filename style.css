@@ -1797,6 +1797,11 @@ body.gate-open { overflow: hidden; }
 
 /* ── Mobile Responsive ──────────────────────── */
 @media (max-width: 576px) {
+  html, body { overflow-x: hidden; }
+  .logo-badge-partner { display: none; }
+  .navbar { padding: 8px 12px; gap: 8px; }
+  .logo-wordmark { font-size: 1.15rem; }
+  .nav-link { padding: 5px 9px; font-size: 0.72rem; }
   .filters-left, .filters-right { width: 100%; }
   .filter-chips { width: 100%; justify-content: space-between; }
   .filter-chip  { flex: 1; text-align: center; padding: 6px 4px; font-size: 0.68rem; }
