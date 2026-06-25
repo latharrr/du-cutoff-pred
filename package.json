@@ -6,7 +6,7 @@
   "type": "module",
   "engines": { "node": ">=18" },
   "scripts": {
-    "dev": "npx -y vercel dev",
+    "dev": "node server.js",
     "deploy": "npx -y vercel --prod"
   }
 }

@@ -12,7 +12,7 @@
 // ── Subject lists ─────────────────────────────────────────────
 const LANGUAGES = [
   "English","Hindi","Assamese","Bengali","Gujarati",
-  "Kannada","Malayalam","Marathi","Odia","Punjabi","Tamil","Telugu","Urdu"
+  "Kannada","Malayalam","Marathi","Odia","Punjabi","Sanskrit","Tamil","Telugu","Urdu"
 ];
 
 const DOMAIN_SUBJECTS = [
@@ -23,7 +23,7 @@ const DOMAIN_SUBJECTS = [
   "Geography / Geology","History","Home Science","Knowledge Tradition - India",
   "Mass Media / Mass Communication","Mathematics / Applied Mathematics",
   "Performing Arts (Dance/Drama/Music)","Physical Education","Physics",
-  "Political Science","Psychology","Sanskrit","Sociology"
+  "Political Science","Psychology","Sociology"
 ];
 
 const APTITUDE_SUBJECTS = ["General Aptitude Test (GAT)"];

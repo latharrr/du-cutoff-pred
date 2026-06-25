@@ -10,6 +10,14 @@ let userData      = null;
 let visibleCount  = 50;        // pagination: how many cards to show
 const PAGE_SIZE   = 50;
 
+const isWomenOnlyCollege = (name) => {
+  return /\(W\)$|for Women/i.test(name);
+};
+
+const getCleanCollegeName = (name) => {
+  return name.replace(/\s*\(W\)$/gi, '').trim();
+};
+
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   let raw;
@@ -82,10 +90,62 @@ function showResults(data) {
   document.getElementById('resultMeta').textContent =
     `CUET 2026 · ${category} category · Composite score: ${composite.toFixed(1)}`;
 
-  // Only include programs where the student took at least one required subject
+  // Helper to strictly check DU CSAS eligibility rules for specific streams as per DU 2026 guidelines
+  const isProgramEligible = (programName, subjectSet) => {
+    const p = programName.toLowerCase();
+    
+    // 1. Language Honours courses: student must have taken that specific language in CUET
+    if (/b\.a\..*english/.test(p)) return subjectSet.has('English');
+    if (/b\.a\..*hindi/.test(p)) return subjectSet.has('Hindi');
+    if (/b\.a\..*sanskrit/.test(p)) return subjectSet.has('Sanskrit');
+    if (/b\.a\..*punjabi/.test(p)) return subjectSet.has('Punjabi');
+    if (/b\.a\..*bengali/.test(p)) return subjectSet.has('Bengali');
+    if (/b\.a\..*urdu/.test(p)) return subjectSet.has('Urdu');
+    
+    // 2. BMS / BBA (FIA) / B.A. (Hons.) Business Economics (Compulsory: Language + Math + GAT)
+    if (/bms\b|bba\b|management studies|investment analysis|business economics/.test(p)) {
+      return subjectSet.has('Mathematics / Applied Mathematics') &&
+             subjectSet.has('General Aptitude Test (GAT)');
+    }
+    
+    // 3. B.Sc. (Hons.) Biochemistry: Chemistry + Biology + (Physics OR Mathematics)
+    if (/biochemistry/.test(p)) {
+      return subjectSet.has('Chemistry') &&
+             subjectSet.has('Biology / Biotech / Biochemistry') &&
+             (subjectSet.has('Physics') || subjectSet.has('Mathematics / Applied Mathematics'));
+    }
+
+    // 4. PCM Science courses: must have Physics, Chemistry, and Mathematics
+    if (/\bphysics\b|chemistry\b|\belectronics\b|instrumentation|polymer|physical science/.test(p)) {
+      return subjectSet.has('Physics') &&
+             subjectSet.has('Chemistry') &&
+             subjectSet.has('Mathematics / Applied Mathematics');
+    }
+    
+    // 5. PCB Science courses: must have Physics, Chemistry, and Biology
+    if (/\bbotany\b|\bzoology\b|microbiology|biomedical|biotechnology|life science/.test(p)) {
+      return subjectSet.has('Physics') &&
+             subjectSet.has('Chemistry') &&
+             subjectSet.has('Biology / Biotech / Biochemistry');
+    }
+    
+    // 6. Mathematics compulsory: Economics, Computer Science, Statistics, Mathematics
+    if (/computer science|\bstatistics\b|mathematics\b|mathematical sciences|\beconomics\b/.test(p)) {
+      return subjectSet.has('Mathematics / Applied Mathematics');
+    }
+    
+    // 7. B.Com (Hons): must have either Mathematics or Accountancy
+    if (/b\.com.*hons/.test(p)) {
+      return subjectSet.has('Mathematics / Applied Mathematics') ||
+             subjectSet.has('Accountancy / Book Keeping');
+    }
+    
+    return true; // other courses allow any subject combination
+  };
+
+  // Filter based on strict eligibility criteria
   const eligible = DU_DATA.filter(item => {
-    if (!item.subjects || item.subjects.length === 0) return true;
-    return item.subjects.some(s => userSubjectSet.has(s));
+    return isProgramEligible(item.program, userSubjectSet);
   });
 
   allResults = eligible.map(item => {
@@ -163,9 +223,15 @@ function renderDreamSpotlight(item, composite) {
     ? `You are <b>+${gap}</b> above projected cutoff`
     : `You need <b>${Math.abs(gap)}</b> more marks`;
 
+  const isWomenOnly = isWomenOnlyCollege(item.college);
+  const cleanCollege = getCleanCollegeName(item.college);
+
   el.innerHTML = `
     <div class="dream-label">⭐ Your Dream College</div>
-    <div class="dream-title">${item.college}</div>
+    <div class="dream-title">
+      ${cleanCollege}
+      ${isWomenOnly ? `<span class="female-only-badge">♀ Female Only</span>` : ''}
+    </div>
     <div class="dream-subtitle">${item.program}</div>
     <div class="dream-prob-row">
       <div class="dream-prob-num" style="color:${probColor}">${item.prob}%</div>
@@ -230,9 +296,15 @@ function renderGrid() {
       ? Math.round(item.totalApplicants / item.seats)
       : null;
 
+    const isWomenOnly = isWomenOnlyCollege(item.college);
+    const cleanCollege = getCleanCollegeName(item.college);
+
     card.innerHTML = `
       <div class="result-card-header">
-        <div class="result-college-name">${item.college}</div>
+        <div class="result-college-name">
+          ${cleanCollege}
+          ${isWomenOnly ? `<span class="female-only-badge">♀ Female Only</span>` : ''}
+        </div>
         <span class="prob-badge ${item.probClass}">${item.prob}%</span>
       </div>
       <div class="result-program">${item.program}</div>

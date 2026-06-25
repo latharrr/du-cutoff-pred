@@ -239,6 +239,14 @@ function updateDreamSearch() {
   }
 }
 
+const isWomenOnlyCollege = (name) => {
+  return /\(W\)$|for Women/i.test(name);
+};
+
+const getCleanCollegeName = (name) => {
+  return name.replace(/\s*\(W\)$/gi, '').trim();
+};
+
 function setupDreamSearch() {
   const input    = document.getElementById('dreamCollegeSearch');
   const dropdown = document.getElementById('searchDropdown');
@@ -265,8 +273,13 @@ function setupDreamSearch() {
     matches.forEach(item => {
       const el = document.createElement('div');
       el.className = 'dropdown-item';
+      const isWomenOnly = isWomenOnlyCollege(item.college);
+      const cleanCollege = getCleanCollegeName(item.college);
       el.innerHTML = `
-        <div class="dropdown-item-college">${item.college}</div>
+        <div class="dropdown-item-college">
+          ${cleanCollege}
+          ${isWomenOnly ? `<span class="female-only-badge">♀ Female Only</span>` : ''}
+        </div>
         <div class="dropdown-item-course">${item.program} · ${item.seats} UR seats · R1: ${item.cutoff.r1}</div>`;
       el.addEventListener('click', () => {
         selectDreamCollege(item);
@@ -288,8 +301,13 @@ function setupDreamSearch() {
 function selectDreamCollege(item) {
   state.dreamCollege = item;
   const el = document.getElementById('selectedDream');
+  const isWomenOnly = isWomenOnlyCollege(item.college);
+  const cleanCollege = getCleanCollegeName(item.college);
   el.innerHTML = `
-    <div class="selected-dream-college">⭐ ${item.college}</div>
+    <div class="selected-dream-college">
+      ⭐ ${cleanCollege}
+      ${isWomenOnly ? `<span class="female-only-badge">♀ Female Only</span>` : ''}
+    </div>
     <div class="selected-dream-course">${item.program}</div>
     <div class="selected-dream-meta">${item.seats} UR seats · R1 cutoff: ${item.cutoff.r1} · R2: ${item.cutoff.r2} · R3: ${item.cutoff.r3}</div>
   `;

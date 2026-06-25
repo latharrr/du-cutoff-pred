@@ -3,18 +3,26 @@
 // rounds all cutoff values to 1 dp, and returns DU_DATA JSON.
 // Cache: 1 hour Vercel edge, 24 h stale-while-revalidate.
 
+import fs from 'fs';
+import path from 'path';
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const sheetUrl = process.env.GOOGLE_SHEET_CSV_URL;
-  if (!sheetUrl) return res.status(500).json({ error: 'GOOGLE_SHEET_CSV_URL env var not set' });
+  let csv = '';
 
   try {
-    const response = await fetch(sheetUrl, { headers: { Accept: 'text/csv,text/plain' } });
-    if (!response.ok) throw new Error(`Sheet returned ${response.status}`);
-
-    const csv  = await response.text();
+    if (sheetUrl) {
+      const response = await fetch(sheetUrl, { headers: { Accept: 'text/csv,text/plain' } });
+      if (!response.ok) throw new Error(`Sheet returned ${response.status}`);
+      csv = await response.text();
+    } else {
+      // Fallback to local file if env variable is missing (great for local running/development)
+      const csvPath = path.join(process.cwd(), 'du_cutoffs_combined.csv');
+      csv = fs.readFileSync(csvPath, 'utf8');
+    }
     const rows = parseCSV(csv);
 
     const data = rows
