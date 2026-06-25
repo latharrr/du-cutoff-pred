@@ -60,7 +60,7 @@ Subjects taken: ${(data.subjects || []).join(', ')}${
     })();
     const firstName = data.name ? data.name.trim().split(' ')[0] : 'there';
     appendMessage('assistant',
-      `Hi ${firstName}! 🎓 I have your 2026 predictions. Ask me anything — "Do I get into SRCC?", "What if I miss Round 1?", or about any specific college.`
+      `Hi ${firstName}! 🎓 I have your 2026 predictions. Ask me anything: "Do I get into SRCC?", "What if I miss Round 1?", or about any specific college.`
     );
     // Show notification dot if panel is closed
     if (!chatOpen) {

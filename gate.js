@@ -56,7 +56,7 @@
         '<h2 class="gate-title">Unlock Your Free<br/>DU Admission Report</h2>',
         '<p class="gate-sub">',
           'See your real admission chances at every Delhi University program ',
-          '— powered by <strong>official DU 2025-26 cutoff data</strong>.',
+          'powered by <strong>official DU 2025-26 cutoff data</strong>.',
         '</p>',
 
         // Benefits
@@ -66,7 +66,7 @@
           '<li><span class="gate-check">✓</span>',
             '<span>Real 2025-26 cutoffs for <b>all 6 reservation categories</b></span></li>',
           '<li><span class="gate-check">✓</span>',
-            '<span>Personal <b>AI counsellor</b> trained on DU CSAS — ask anything</span></li>',
+            '<span>Personal <b>AI counsellor</b> trained on DU CSAS. Ask anything.</span></li>',
         '</ul>',
 
         // Form
@@ -80,7 +80,7 @@
           '<div class="gate-field">',
             '<label class="gate-label" for="gatePhone">',
               'WhatsApp Number',
-              '<span class="gate-optional"> — get your report sent here</span>',
+              '<span class="gate-optional"> (get your report here)</span>',
             '</label>',
             '<div class="gate-phone-wrap">',
               '<span class="gate-phone-prefix">🇮🇳 +91</span>',
@@ -105,7 +105,7 @@
         // Fine-print
         '<p class="gate-fine-print">',
           'We take privacy as seriously as CUET prep. Your number is stored securely and used ',
-          '<em>only</em> to send your personalised admission report on WhatsApp — nothing else, ever. ',
+          '<em>only</em> to send your personalised admission report on WhatsApp. Nothing else, ever. ',
           'No calls. No third-party sharing. No advertising. You can request deletion anytime.',
         '</p>',
 
