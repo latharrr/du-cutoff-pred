@@ -165,14 +165,27 @@ function getCutoffTrend(cutoff) {
   return { label: '→ Stable', cls: 'trend-stable' };
 }
 
-// Composite = best 4 subject scores (Language + domain subjects)
+// Composite = best Language paper + best 3 domain papers (DU CSAS rule)
+// If no language selected, falls back to best 4 overall.
 function calcCompositeScore(scores) {
-  const vals = Object.values(scores)
-    .map(v => parseFloat(v) || 0)
-    .filter(v => v > 0);
-  if (vals.length === 0) return 0;
-  vals.sort((a, b) => b - a);
-  return Math.round(vals.slice(0, 4).reduce((a, b) => a + b, 0) * 10) / 10;
+  const langScores   = [];
+  const domainScores = [];
+
+  Object.entries(scores).forEach(([subj, val]) => {
+    const v = parseFloat(val) || 0;
+    if (v <= 0) return;
+    if (LANGUAGES.includes(subj)) langScores.push(v);
+    else domainScores.push(v);
+  });
+
+  langScores.sort((a, b) => b - a);
+  domainScores.sort((a, b) => b - a);
+
+  const parts = langScores.length > 0
+    ? [langScores[0], ...domainScores.slice(0, 3)]   // Language + best 3 domain
+    : domainScores.slice(0, 4);                        // No language — best 4 domain
+
+  return parts.length === 0 ? 0 : Math.round(parts.reduce((a, b) => a + b, 0) * 10) / 10;
 }
 
 const TOTAL_CUET_CANDIDATES = 1380000;

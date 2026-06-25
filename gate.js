@@ -36,14 +36,14 @@
         // Headline
         '<h2 class="gate-title">Unlock Your Free<br/>DU Admission Report</h2>',
         '<p class="gate-sub">',
-          '<strong>87,000+ students</strong> have already seen their exact chances ',
-          'at every Delhi University program — in under 60 seconds.',
+          'See your real admission chances at every Delhi University program ',
+          '— powered by <strong>official DU 2025-26 cutoff data</strong>.',
         '</p>',
 
         // Benefits
         '<ul class="gate-benefits">',
           '<li><span class="gate-check">✓</span>',
-            '<span>Admission probability at <b>1,526 programs</b> across all 67 DU colleges</span></li>',
+            '<span>Admission probability at <b>1,529 programs</b> across all 67 DU colleges</span></li>',
           '<li><span class="gate-check">✓</span>',
             '<span>Real 2025-26 cutoffs for <b>all 6 reservation categories</b></span></li>',
           '<li><span class="gate-check">✓</span>',
