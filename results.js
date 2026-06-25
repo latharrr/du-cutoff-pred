@@ -173,7 +173,7 @@ function renderDreamSpotlight(item, composite) {
       </div>
       <div class="dream-cutoff-item">
         <span class="dream-cutoff-label">UR Seats</span>
-        <span class="dream-cutoff-val">${item.seats}</span>
+        <span class="dream-cutoff-val">${item.seats || '—'}</span>
       </div>
     </div>
   `;
@@ -248,7 +248,7 @@ function renderGrid() {
       <div class="result-card-footer">
         <div class="footer-left">
           ${gapHtml}
-          <span class="seats-info">🎓 ${item.seats} seats</span>
+          ${item.seats ? `<span class="seats-info">🎓 ${item.seats} seats</span>` : ''}
           ${compRatio ? `<span class="competition-ratio">👥 ${compRatio}:1 ratio</span>` : ''}
         </div>
         <div class="footer-right">
