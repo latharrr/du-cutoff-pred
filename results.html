@@ -147,5 +147,26 @@
   <script src="data.js"></script>
   <script src="results.js"></script>
   <script src="chat-widget.js"></script>
+  <script>
+  (function(){try{
+    var w=screen.width,h=screen.height;
+    var payload={
+      page:'results',
+      deviceType:w<=768?'mobile':w<=1024?'tablet':'desktop',
+      screenRes:w+'x'+h,
+      language:navigator.language||'',
+      timezone:(Intl&&Intl.DateTimeFormat)?Intl.DateTimeFormat().resolvedOptions().timeZone:'',
+    };
+    try{
+      var d=JSON.parse(sessionStorage.getItem('cuetData')||'{}');
+      if(d.category)    payload.category=d.category;
+      if(d.composite)   payload.score=Math.round(d.composite*10)/10;
+      if(d.subjects)    payload.subjects=(d.subjects||[]).join('|');
+      if(d.dreamCollege)payload.dreamCollege=d.dreamCollege.college+' – '+d.dreamCollege.program;
+    }catch(_){}
+    fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload),keepalive:true}).catch(function(){});
+  }catch(_){}}());
+  </script>
 </body>
 </html>
